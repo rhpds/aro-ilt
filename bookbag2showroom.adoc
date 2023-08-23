@@ -1,0 +1,103 @@
+== Modules Migration
+
+YAML -> Asciidoc
+
+. modules:
+
+.. move `name:` to end of adoc filename in []
+
+original
+
+ home:
+   name: Home
+   exit_sign: Continue
+
+becomes
+----
+* xref:home.adoc[Home]
+----
+
+. If there's a slash in the path:
+.. and the path doesn't already exist
+.. make it a top level item
++
+  100-setup/1-environment:
+    name: Environment Setup
+    exit_sign: Continue
++
+becomes:
++
+----
+. Setup
+* 100-setup/1-environment.adoc[Environment Setup]
+----
++
+. If there's a slash in the path
+.. and there's already a path by that name
+.. add two **
++
+  100-setup/1-environment:
+    name: Environment Setup
+    exit_sign: Continue
+  100-setup/2-access-cluster:
+    name: Access your ARO Cluster
+    exit_sign: Continue
++
+becomes:
++
+----
+. Setup
+* 100-setup/1-environment.adoc[Environment Setup]
+* 100-setup/2-access-cluster.adoc[Access your ARO Cluster]
+----
++
+. If there are MORE slashes in the name, add \*** to suit
++
+----
+  200-ops/idp/1-aad:
+    name: Cluster Authentication
+    exit_sign: Continue
+  200-ops/idp/1a-configure-aad:
+    name: Configuring Cluster Authentication
+    exit_sign: Continue
+----
+becomes:
+----
+.Ops
+* IDP
+** xref:200-ops/idp/1-aad.adoc[Cluster Authentication]
+** 200-ops/idp/1a-configure-aad.adoc[Configuring Cluster Authentication]
+----
++
+. Sublevels of differing names create a new list item
++
+----
+200-ops/idp/1-aad:
+    name: Cluster Authentication
+    exit_sign: Continue
+  200-ops/idp/1a-configure-aad:
+    name: Configuring Cluster Authentication
+    exit_sign: Continue
+  200-ops/idp/1b-explore-aad:
+    name: Explore Cluster Authentication
+    exit_sign: Continue
+  200-ops/day2/1-upgrades:
+    name: Managing Cluster Upgrades
+    exit_sign: Continue
+  200-ops/day2/2-scaling-nodes:
+    name: Managing Worker Nodes
+    exit_sign: Continue
+----
++
+becomes
++
+----
+.Ops
+* IDP
+** xref:200-ops/idp/1-aad.adoc[Cluster Authentication]
+** 200-ops/idp/1a-configure-aad.adoc[Configuring Cluster Authentication]
+** 200-ops/idp/1b-explore-aad.adoc[Explore Cluster Authentication]
+* Day 2
+** 200-ops/day2/1-upgrades.adoc[Managing Cluster Upgrades]
+** 200-ops/day2/2-scaling-nodes.adoc[Managing Worker Nodes]
+----
