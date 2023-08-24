@@ -1,0 +1,2 @@
+cp -rv ~/Development/bookbag-aro-mobb/workshop/content/* ~/Development/aro-ilt/documentation/modules/ROOT/pages/
+find ~/Development/aro-ilt/documentation/modules/ROOT/pages -name '*.adoc' | xargs perl -pi -e 's/^image:.*\/(.*?)$/image:$1/'

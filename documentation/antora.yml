@@ -1,7 +1,7 @@
 name: template-tutorial
-title: Showroom Poc Demo
+title: ARO ILT
 version: master
 nav:
   - modules/ROOT/nav.adoc
 
-start_page: ROOT:index.adoc
+start_page: ROOT:home.adoc
