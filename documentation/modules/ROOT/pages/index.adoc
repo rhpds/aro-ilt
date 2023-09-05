@@ -1,10 +1,10 @@
-= Welcome to the Showroom UI/UX Demo and Playground
+= Welcome to the ARO ILT!
 
 :page-layout: home
 include::include_vars.adoc[]
 :!sectids:
 
-Welcome to your working Showroom Demo environment with a guid of {guid}
+Welcome to your working ARO ILT environment with a guid of {guid}
 
 You can access it via `ssh` with the following command:
 
