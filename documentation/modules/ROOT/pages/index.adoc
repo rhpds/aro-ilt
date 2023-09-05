@@ -10,12 +10,12 @@ You can access it via `ssh` with the following command:
 
 [source, java,subs="+macros,+attributes"]
 ----
-ssh command is {ssh_command}
+ssh command is {bastion_ssh_command}
 ----
 
 And your password is {ssh_password}
 
-Your Passowrd, {ssh_password}, will also work with your Visual Studio Code session
+Your Passowrd, {bastion_password}, will also work with your Visual Studio Code session
 
 
 [.text-center.strong]
