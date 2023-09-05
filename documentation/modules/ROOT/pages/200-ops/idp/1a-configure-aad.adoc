@@ -237,7 +237,7 @@ oauth-openshift-6686cdfd44-rrmcw   1/1     Running   0          3m37s
 [source,sh,role=execute]
 ----
 oc adm policy add-cluster-role-to-user cluster-admin \
-  openenv-admin-%guid%@azure.opentlc.com
+  openenv-admin-{guid}@azure.opentlc.com
 ----
 +
 .Sample Output
@@ -255,8 +255,8 @@ If you do not see a new *AAD* login option, wait a few more minutes as this proc
 ====
 
 . Select `AAD`, and log in using the provided Azure credentials:
-* *User*: openenv-admin-%guid%@azure.opentlc.com
-* *Password*: %bastion_password%
+* *User*: openenv-admin-{guid}@azure.opentlc.com
+* *Password*: {bastion_password}
 
 . You will be prompted to change your password. Provide your current password and select a new password that you will remember.
 +
@@ -264,7 +264,7 @@ It is suggested to use something like *FirstnameLastnameMOBB23*.
 
 . The first time you log in you will also be prompted to accept permissions for the _application_. Click *Accept*.
 +
-Now you should be logged into the OpenShift Console as user *openenv-admin-%guid%@azure.opentlc.com* with Cluster Administrator permissions.
+Now you should be logged into the OpenShift Console as user *openenv-admin-{guid}@azure.opentlc.com* with Cluster Administrator permissions.
 
 == Log into OpenShift CLI using Azure Credentials
 
@@ -285,7 +285,7 @@ oc whoami
 .Sample Output
 [source,texinfo,options=nowrap]
 ----
-openenv-admin-%guid%@azure.opentlc.com
+openenv-admin-{guid}@azure.opentlc.com
 ----
 
 You now have full admin access to both the Azure console and the OpenShift console via the Azure AD admin account.

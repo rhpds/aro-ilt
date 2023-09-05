@@ -1,25 +1,14 @@
 #$/usr/bin/perl
-# You've gotta install Text::Autoformat
-#
 use strict;
 use warnings;
 
 use YAML qw(LoadFile);
 use Data::Dumper qw(Dumper);
-#use Text::Autoformat;
 local $YAML::Preserve = 1;
 
 my $source_filename = shift or die "Usage: $0 YAML-FILE\n";
 
 my $data = LoadFile($source_filename);
-
-#print Dumper $data;
-#print  "$data\n";
-#print keys %$data; print "\n";
-#print $data->{'modules'};
-#print "\n\n";
-#print join "\n", sort keys %{$data->{'modules'}};
-#print "\n\n";
 
 my %nav;
 

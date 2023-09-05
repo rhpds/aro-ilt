@@ -4,7 +4,7 @@ runtime:
 site:
   title: ARO ILT
   url: https://redhat-scholars.github.io/course-template
-  start_page: template-tutorial::home.adoc
+  start_page: aro-ilt::home.adoc
 
 content:
   sources:

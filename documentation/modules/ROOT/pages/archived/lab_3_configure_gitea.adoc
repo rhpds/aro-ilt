@@ -87,11 +87,11 @@ spec:
   giteaSsl: true
   postgresqlVolumeSize: 4Gi
   giteaAdminUser: gitea-mgr
-  giteaAdminPassword: "%generated_password%"
+  giteaAdminPassword: "{generated_password}"
   giteaCreateUsers: true
   giteaGenerateUserFormat: developer
   giteaUserNumber: 1
-  giteaUserPassword: "%generated_password%"
+  giteaUserPassword: "{generated_password}"
   giteaMigrateRepositories: true
   giteaRepositoriesList:
   - repo: https://github.com/MicrosoftDocs/mslearn-aks-workshop-ratings-api.git

@@ -4,7 +4,7 @@ runtime:
 site:
   title: Template Tutorial(Dev Mode)
   url: http://localhost:3000/rhs-build-course/index.html
-  start_page: template-tutorial::index.adoc
+  start_page: aro-ilt::home.adoc
 
 content:
   sources:
@@ -13,7 +13,7 @@ content:
       start_path: documentation
 asciidoc:
   attributes:
-    title: Template Tutorial(Dev Mode)
+    title: ARO ILT(Dev Mode)
   extensions:
     - ./lib/remote-include-processor.js
     - ./lib/tab-block.js
