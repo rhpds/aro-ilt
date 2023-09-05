@@ -1,4 +1,4 @@
-:preconfigure_aad: %preconfigure_aad%
+:preconfigure_aad: {preconfigure_aad}
 
 = Explore OpenShift authentication using AAD
 ifeval::[{preconfigure_aad} == false]
@@ -54,7 +54,7 @@ You will see your cluster `aro-cluster-{guid}`.
 
 Now that your password has been changed for the Azure admin account you can use single sign on to log into your OpenShift cluster.
 
-. Navigate back to the OpenShift console at %aro_console%.
+. Navigate back to the OpenShift console at {aro_console}.
 . This time click on `AAD` when prompted for which authentication provider to use.
 . Use `{openenv_admin_upn}` as the user and the password that you set for the Azure portal to log into the console.
 +

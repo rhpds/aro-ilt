@@ -1,4 +1,4 @@
-:preconfigure_aad: %preconfigure_aad%
+:preconfigure_aad: {preconfigure_aad}
 
 = Configuring Azure AD for Cluster Authentication
 ifeval::[{preconfigure_aad} == true]

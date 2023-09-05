@@ -1,4 +1,4 @@
-:preconfigure_aad: %preconfigure_aad%
+:preconfigure_aad: {preconfigure_aad}
 // :preconfigure_aad: disabled
 = Azure AD for Cluster Authentication
 
