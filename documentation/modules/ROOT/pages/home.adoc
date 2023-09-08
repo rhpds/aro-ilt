@@ -1,6 +1,6 @@
 = Building a Modern Application Platform with Azure & ARO
 
-== rebuild test info
+== rebuild test info here
 
 Welcome to the Building a Modern Application Platform workshop. In this workshop you will learn the building blocks of a modern application platform and leverage Microsoft Azure and  Azure Red Hat OpenShift (ARO) to build a modern application platform.
 
