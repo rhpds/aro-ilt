@@ -3,30 +3,11 @@
 
 .100-setup
 * xref:100-setup/1-environment.adoc[Environment Setup]
-* xref:100-setup/2-access-cluster.adoc[Access your ARO Cluster]
+* xref:100-setup/2-deploy-cluster.adoc[Deploy ARO Cluster]
+* xref:100-setup/3-access-cluster.adoc[Access your ARO Cluster]
 
 .200-ops
-* idp
-** xref:200-ops/idp/1-aad.adoc[Cluster Authentication]
-** xref:200-ops/idp/1a-configure-aad.adoc[Configuring Cluster Authentication]
-** xref:200-ops/idp/1b-explore-aad.adoc[Explore Cluster Authentication]
-* day2
-** xref:200-ops/day2/1-upgrades.adoc[Managing Cluster Upgrades]
-** xref:200-ops/day2/2-scaling-nodes.adoc[Managing Worker Nodes]
-** xref:200-ops/day2/3-autoscaling.adoc[Cluster Autoscaling]
-** xref:200-ops/day2/4-labels.adoc[Labeling Nodes]
-** xref:200-ops/day2/5-observability.adoc[Forward Metrics and Logs to Azure Files]
 
 .300-app
-* xref:300-app/1-app-deploy.adoc[Deploy a Quarkus based Java Application]
-* xref:300-app/3-app-networkpolicy.adoc[Restrict Network Access]
-* xref:300-app/4-resilient-app.adoc[Making your application resilient]
-* xref:300-app/2-app-gitops.adoc[Using OpenShift GitOps for Configuration Consistency]
 
 .500-service-mesh
-* xref:500-service-mesh/1-service-mesh-introduction.adoc[Introduction to OpenShift Service Mesh]
-* xref:500-service-mesh/2-service-mesh-deploy-operator.adoc[Deploy Service Mesh Operator]
-* xref:500-service-mesh/3-service-mesh-deploy-control-plane.adoc[Deploy Control Plane]
-* xref:500-service-mesh/4-service-mesh-deploy-app.adoc[Deploy Workloads]
-* xref:500-service-mesh/5-service-mesh-weighted-routing.adoc[Weighted Routing]
-* xref:500-service-mesh/6-service-mesh-observe.adoc[Configure and Observe Traffic]

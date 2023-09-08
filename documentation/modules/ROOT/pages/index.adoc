@@ -1,36 +1,19 @@
-= Welcome to the ARO ILT!
+= Building a Modern Application Platform with Azure & ARO 
 
-:page-layout: home
-include::include_vars.adoc[]
-:!sectids:
+Welcome to the Building a Modern Application Platform workshop. In this workshop you will learn the building blocks of a modern application platform and leverage Microsoft Azure and  Azure Red Hat OpenShift (ARO) to build a modern application platform. 
 
-Welcome to your working ARO ILT environment with a guid of {guid}
+https://azure.microsoft.com/en-us/services/openshift/[Azure Red Hat OpenShift] is a fully managed Red Hat OpenShift service in Azure that is jointly engineered and supported by Microsoft and Red Hat.
 
-You can access it via `ssh` with the following command:
+*Who this workshop is for:* This workshop is aimed at Platform Engineers, DevOps Engineers, Cloud Operations, Architects, and Developers that want to learn what makes a modern application platform, and how they can leverage cloud services to streamline the delivery and operations of their application platforms.
 
-[source, java,subs="+macros,+attributes"]
-----
-ssh command is {bastion_ssh_command}
-----
+*What to expect:* During the workshop, attendees will learn how to build a modern application platform by leveraging Azure Red Hat OpenShift, and other Azure cloud services. Through a series of hands on modules and instructor led presentations, attendees will:
 
-And your password is {ssh_password}
+- Perform Day 2 operations tasks such as configuring node and cluster scaling policies, configuring managed upgrades, and using labels for deterministic app placement on nodes.
+- Deploy an application that uses Azure Database for Postgres.
+- Make an application on OpenShift scalable and resistant to node failures and upgrades.
+- Ensure application configuration consistency with OpenShift GitOps.
+- Deploy an application to ARO, and then automate it with OpenShift Pipelines using modern tooling and practices.
+- Integrate ARO with Azure services such as Azure AD, Azure Files, and more. 
+- Deploy OpenShift Service Mesh on ARO to manage a microservices deployment.
 
-Your Passowrd, {bastion_password}, will also work with your Visual Studio Code session
-
-
-[.text-center.strong]
-== Publish Services to Kubernetes
-
-A Kubernetes tutorial to show how you can deploy a Java service to a Kubernetes cluster as it was a child game.
-
-[.tiles.browse]
-== Browse modules
-
-[.tile]
-.xref:01-setup.adoc[Get Started]
-* xref:01-setup.adoc#minikube[Minikube]
-
-[.tile]
-.xref:02-deploy.adoc[Deploying]
-* xref:02-deploy.adoc#package[Package the Application]
-* xref:02-deploy.adoc#deploy[Deploy the Application]
+After completing this workshop, attendees will understand the concepts of modern application platforms, and will have begun to lay the foundations in their provided Azure infrastructure.

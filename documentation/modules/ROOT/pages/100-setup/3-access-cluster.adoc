@@ -113,6 +113,22 @@ az aro show -g openenv-${GUID} -n aro-cluster-${GUID} --query apiserverProfile.u
 {aro_api}
 ----
 
+. Validate the version of the OpenShift CLI:
++
+[source,sh]
+----
+oc version
+----
++
+.Sample Output
+[source,texinfo]
+----
+Client Version: 4.11.26
+Kustomize Version: v4.5.4
+Server Version: 4.11.26
+Kubernetes Version: v1.24.6+263df15
+----
+
 . Now that we've captured the API server endpoint, we can login to the cluster by running the following command:
 +
 [source,sh,role=execute]

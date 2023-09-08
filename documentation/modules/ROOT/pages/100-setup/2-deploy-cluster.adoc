@@ -1,0 +1,453 @@
+:page-layout: home
+include::../include_vars.adoc[]
+:!sectids:
+== Deploy Private ARO Cluster with a Customer Domain and Access via Jumphost
+
+There are many Azure configuration steps in this chapter.
+Please proceed carefully.
+
+=== Azure preparation
+
+Setup your environment for an ARO deploy.
+
+. Setup environment variables to ease command execution:
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+cat << EOF >> ~/.bashrc
+export DOMAIN={azure_dns_zone}
+export CLIENT_ID={azure_service_principal_id}
+export AZ_SP_ID={azure_service_principal_id}
+export PASSWORD={azure_service_principal_password}
+export AZ_SP_PASS={azure_service_principal_password}
+export TENANT={azure_tenant}
+export SUBSCRIPTION={azure_subscription}
+export AZR_RESOURCE_GROUP={azure_resource_group}
+export AZR_RESOURCE_LOCATION=eastus
+export AZR_CLUSTER=private-cluster
+export AZR_PULL_SECRET=/home/azure/pull_secret.txt
+export NETWORK_SUBNET=10.0.0.0/20
+export CONTROL_SUBNET=10.0.0.0/24
+export MACHINE_SUBNET=10.0.1.0/24
+export FIREWALL_SUBNET=10.0.2.0/24
+export JUMPHOST_SUBNET=10.0.3.0/24
+EOF
+source ~/.bashrc
+----
+
+. Log in to Azure
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+az login \
+  --service-principal \
+  -u $CLIENT_ID \
+  -p $PASSWORD \
+  --tenant $TENANT
+----
++
+.Sample Output:
+[source,json]
+----
+[
+  {
+    "cloudName": "AzureCloud",
+    "homeTenantId": "1ce7852f-dcf3-42bc-afe6-3bf81ab984fb",
+    "id": "ede7f891-835c-4128-af5b-0e53848e54e7",
+    "isDefault": true,
+    "managedByTenants": [
+      {
+        "tenantId": "b5ce0030-ec42-4a62-bc94-3025993e790c"
+      }
+    ],
+    "name": "RHPDS Subscription - OpenTLC Tenant",
+    "state": "Enabled",
+    "tenantId": "1ce7852f-dcf3-42bc-afe6-3bf81ab984fb",
+    "user": {
+      "name": "4ad6d073-043f-48e9-9152-75cbd21e687b",
+      "type": "servicePrincipal"
+    }
+  }
+]
+----
+
+NOTE: This ARO ILT envionment is scoped to a ResourceGroup.
+The ResourceGroup has already been created for you.
+
+=== Networking
+
+. Create virtual network
++
+[source,bash,role=execute]
+----
+az network vnet create \
+  --resource-group $AZR_RESOURCE_GROUP \
+  --name "$AZR_CLUSTER-aro-vnet-$AZR_RESOURCE_LOCATION" \
+  --address-prefixes $NETWORK_SUBNET \
+  --location=$AZR_RESOURCE_LOCATION
+----
++
+.Sample Output
+[source,json]
+----
+{
+  "newVNet": {
+    "addressSpace": {
+      "addressPrefixes": [
+        "10.0.0.0/20"
+      ]
+    },
+    "enableDdosProtection": false,
+    "etag": "W/\"cbfbf878-d59d-4b27-b1d8-3389719fb5e5\"",
+    "id": "/subscriptions/ede7f891-835c-4128-af5b-0e53848e54e7/resourceGroups/openenv-tk84x/providers/Microsoft.Network/virtualNetworks/private-cluster-aro-vnet-eastus-tk84x",
+    "location": "eastus",
+    "name": "private-cluster-aro-vnet-eastus-tk84x",
+    "provisioningState": "Succeeded",
+    "resourceGroup": "openenv-tk84x",
+    "resourceGuid": "c0fc3d31-4be3-4457-a847-3351c5acbf0a",
+    "subnets": [],
+    "type": "Microsoft.Network/virtualNetworks",
+    "virtualNetworkPeerings": []
+  }
+}
+----
+
+. Create Control Plane Subnet
++
+[source,bash,role=execute]
+----
+az network vnet subnet create                                     \
+  --resource-group $AZR_RESOURCE_GROUP                            \
+  --vnet-name "$AZR_CLUSTER-aro-vnet-$AZR_RESOURCE_LOCATION"      \
+  --name "$AZR_CLUSTER-aro-control-subnet-$AZR_RESOURCE_LOCATION" \
+  --address-prefixes $CONTROL_SUBNET                              \
+  --service-endpoints Microsoft.ContainerRegistry
+----
++
+.Sample Output
+[source,json]
+----
+{
+  "addressPrefix": "10.0.0.0/24",
+  "delegations": [],
+  "etag": "W/\"c1c51840-2a71-4171-b3d3-b29b9ab2315f\"",
+  "id": "/subscriptions/ede7f891-835c-4128-af5b-0e53848e54e7/resourceGroups/openenv-tk84x/providers/Microsoft.Network/virtualNetworks/private-cluster-aro-vnet-eastus-tk84x/subnets/private-cluster-aro-control-subnet-eastus-tk84x",
+  "name": "private-cluster-aro-control-subnet-eastus-tk84x",
+  "privateEndpointNetworkPolicies": "Disabled",
+  "privateLinkServiceNetworkPolicies": "Enabled",
+  "provisioningState": "Succeeded",
+  "resourceGroup": "openenv-tk84x",
+  "serviceEndpoints": [
+    {
+      "locations": [
+        "*"
+      ],
+      "provisioningState": "Succeeded",
+      "service": "Microsoft.ContainerRegistry"
+    }
+  ],
+  "type": "Microsoft.Network/virtualNetworks/subnets"
+}
+----
+
+. Create a machine subnet
++
+[source,bash,role=execute]
+----
+az network vnet subnet create                                       \
+  --resource-group $AZR_RESOURCE_GROUP                              \
+  --vnet-name "$AZR_CLUSTER-aro-vnet-$AZR_RESOURCE_LOCATION"  \
+  --name "$AZR_CLUSTER-aro-machine-subnet-$AZR_RESOURCE_LOCATION"   \
+  --address-prefixes $MACHINE_SUBNET                                \
+  --service-endpoints Microsoft.ContainerRegistry
+----
++
+.Sample Output
+[source,json]
+----
+{
+  "addressPrefix": "10.0.1.0/24",
+  "delegations": [],
+  "etag": "W/\"72fcb6e2-9a84-44da-82c7-f803effc341d\"",
+  "id": "/subscriptions/ede7f891-835c-4128-af5b-0e53848e54e7/resourceGroups/openenv-tk84x/providers/Microsoft.Network/virtualNetworks/private-cluster-aro-vnet-eastus-tk84x/subnets/private-cluster-aro-machine-subnet-eastus-tk84x",
+  "name": "private-cluster-aro-machine-subnet-eastus-tk84x",
+  "privateEndpointNetworkPolicies": "Disabled",
+  "privateLinkServiceNetworkPolicies": "Enabled",
+  "provisioningState": "Succeeded",
+  "resourceGroup": "openenv-tk84x",
+  "serviceEndpoints": [
+    {
+      "locations": [
+        "*"
+      ],
+      "provisioningState": "Succeeded",
+      "service": "Microsoft.ContainerRegistry"
+    }
+  ],
+  "type": "Microsoft.Network/virtualNetworks/subnets"
+}
+----
+
+. Disable network policies for Private Link Service on the control plane subnet
++
+NOTE: This is required for the service to be able to connect to and manage the cluster.
++
+[source,bash,role=execute]
+----
+az network vnet subnet update                                             \
+  --name "$AZR_CLUSTER-aro-control-subnet-$AZR_RESOURCE_LOCATION"   \
+  --resource-group $AZR_RESOURCE_GROUP                                    \
+  --vnet-name "$AZR_CLUSTER-aro-vnet-$AZR_RESOURCE_LOCATION"        \
+  --disable-private-link-service-network-policies true
+----
++
+.Sample Output
+[source,json]
+----
+{
+  "addressPrefix": "10.0.0.0/24",
+  "delegations": [],
+  "etag": "W/\"744c18d8-7a7e-4cd5-bcc2-0d4ab798e539\"",
+  "id": "/subscriptions/ede7f891-835c-4128-af5b-0e53848e54e7/resourceGroups/openenv-tk84x/providers/Microsoft.Network/virtualNetworks/private-cluster-aro-vnet-eastus-tk84x/subnets/private-cluster-aro-control-subnet-eastus-tk84x",
+  "name": "private-cluster-aro-control-subnet-eastus-tk84x",
+  "privateEndpointNetworkPolicies": "Disabled",
+  "privateLinkServiceNetworkPolicies": "Disabled",
+  "provisioningState": "Succeeded",
+  "resourceGroup": "openenv-tk84x",
+  "serviceEndpoints": [
+    {
+      "locations": [
+        "*"
+      ],
+      "provisioningState": "Succeeded",
+      "service": "Microsoft.ContainerRegistry"
+    }
+  ],
+  "type": "Microsoft.Network/virtualNetworks/subnets"
+}
+----
+
+=== Egress
+
+You have the choice of running a NAT GW or Firewall service for your Internet Egress.
+
+Run through the step of one of the two following options
+
+==== NAT Gateway
+
+This replaces the routes for the cluster to go through the Azure NAT GW service for egress vs the LoadBalancer which we can later remove. It does come with extra Azure costs of course.
+
+. Create a Public IP
++
+[source,bash,role=execute]
+----
+az network public-ip create -g $AZR_RESOURCE_GROUP \
+  -n $AZR_CLUSTER-natgw-ip   \
+  --sku "Standard" \
+  --location $AZR_RESOURCE_LOCATION
+----
++
+.Sample Output
+[source,json]
+----
+[Coming breaking change] In the coming release, the default behavior will be changed as follows when sku is Standard and zone is not provided: For zonal regions, you will get a zone-redundant IP indicated by zones:["1","2","3"]; For non-zonal regions, you will get a non zone-redundant IP indicated by zones:null.
+{
+  "publicIp": {
+    "ddosSettings": {
+      "protectionMode": "VirtualNetworkInherited"
+    },
+    "etag": "W/\"d59cb870-021a-4478-a4bb-7715abd329e4\"",
+    "id": "/subscriptions/ede7f891-835c-4128-af5b-0e53848e54e7/resourceGroups/openenv-tk84x/providers/Microsoft.Network/publicIPAddresses/private-cluster-natgw-ip",
+    "idleTimeoutInMinutes": 4,
+    "ipAddress": "20.185.176.61",
+    "ipTags": [],
+    "location": "eastus",
+    "name": "private-cluster-natgw-ip",
+    "provisioningState": "Succeeded",
+    "publicIPAddressVersion": "IPv4",
+    "publicIPAllocationMethod": "Static",
+    "resourceGroup": "openenv-tk84x",
+    "resourceGuid": "f012606b-76c2-45ae-b5d8-d21cfe21fc40",
+    "sku": {
+      "name": "Standard",
+      "tier": "Regional"
+    },
+    "type": "Microsoft.Network/publicIPAddresses"
+  }
+}
+----
+
+. Create the NAT Gateway
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+az network nat gateway create \
+  --resource-group $\{AZR_RESOURCE_GROUP} \
+  --name "$\{AZR_CLUSTER}-natgw" \
+  --location $\{AZR_RESOURCE_LOCATION} \
+  --public-ip-addresses "$\{AZR_CLUSTER}-natgw-ip"
+----
++
+.Sample Output
+[source,json]
+----
+{
+  "etag": "W/\"292ecce4-2607-4a01-84f4-e58dfaa454f1\"",
+  "id": "/subscriptions/ede7f891-835c-4128-af5b-0e53848e54e7/resourceGroups/openenv-tk84x/providers/Microsoft.Network/natGateways/private-cluster-natgw",
+  "idleTimeoutInMinutes": 4,
+  "location": "eastus",
+  "name": "private-cluster-natgw",
+  "provisioningState": "Succeeded",
+  "publicIpAddresses": [
+    {
+      "id": "/subscriptions/ede7f891-835c-4128-af5b-0e53848e54e7/resourceGroups/openenv-tk84x/providers/Microsoft.Network/publicIPAddresses/private-cluster-natgw-ip",
+      "resourceGroup": "openenv-tk84x"
+    }
+  ],
+  "resourceGroup": "openenv-tk84x",
+  "resourceGuid": "2eafb497-ea68-48f1-a8dd-3b5ec842299d",
+  "sku": {
+    "name": "Standard"
+  },
+  "type": "Microsoft.Network/natGateways"
+}
+----
+
+. Get the Public IP of the NAT Gateway
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+GW_PUBLIC_IP=$(az network public-ip show -g $\{AZR_RESOURCE_GROUP} \
+  -n "$\{AZR_CLUSTER}-natgw-ip" --query "ipAddress" -o tsv)
+echo $GW_PUBLIC_IP
+echo "export GW_PUBLIC_IP=$GW_PUBLIC_IP" >> ~/.bashrc
+----
+
+. Reconfigure Subnets to use Nat GW
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+az network vnet subnet update \
+  --name "$\{AZR_CLUSTER}-aro-control-subnet-$\{AZR_RESOURCE_LOCATION}"   \
+  --resource-group $\{AZR_RESOURCE_GROUP}                              \
+  --vnet-name "$\{AZR_CLUSTER}-aro-vnet-$\{AZR_RESOURCE_LOCATION}"        \
+  --nat-gateway "$\{AZR_CLUSTER}-natgw"
+----
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+az network vnet subnet update \
+  --name "$\{AZR_CLUSTER}-aro-machine-subnet-$\{AZR_RESOURCE_LOCATION}"   \
+  --resource-group $\{AZR_RESOURCE_GROUP}                              \
+  --vnet-name "$\{AZR_CLUSTER}-aro-vnet-$\{AZR_RESOURCE_LOCATION}-$\{GUID}"        \
+  --nat-gateway "$\{AZR_CLUSTER}-natgw"
+----
+
+== Create the Cluster
+
+Start a `tmux` session so you can create the Jump Host while the cluster is deploying.
+
+. Create the Cluster
+This will take between 30 and 45 minutes.
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+az aro create                                                              \
+  --resource-group $AZR_RESOURCE_GROUP                                     \
+  --name $AZR_CLUSTER                                                      \
+  --vnet "$AZR_CLUSTER-aro-vnet-$AZR_RESOURCE_LOCATION"                    \
+  --master-subnet "$AZR_CLUSTER-aro-control-subnet-$AZR_RESOURCE_LOCATION" \
+  --worker-subnet "$AZR_CLUSTER-aro-machine-subnet-$AZR_RESOURCE_LOCATION" \
+  --apiserver-visibility Private                                           \
+  --ingress-visibility Private                                             \
+  --pull-secret @$AZR_PULL_SECRET                                          \
+  --client-id "$\{AZ_SP_ID}"                                               \
+  --client-secret "$\{AZ_SP_PASS}"                                         \
+  --domain "$\{DOMAIN}"                                                    \
+  --location=$AZR_RESOURCE_LOCATION
+----
+
+== Create the Jump Host
+
+With the cluster in a private network, we can create a Jump host in order to connect to it. You can do this while the cluster is being created.
+
+. Create a new `tmux` window by hitting `<control> bc`
+
+. Create jump subnet
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+az network vnet subnet create                                \
+  --resource-group $AZR_RESOURCE_GROUP                       \
+  --vnet-name "$AZR_CLUSTER-aro-vnet-$AZR_RESOURCE_LOCATION" \
+  --name JumpSubnet                                          \
+  --address-prefixes $JUMPHOST_SUBNET                        \
+  --service-endpoints Microsoft.ContainerRegistry
+----
+
+. Create a jump host
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+az vm create --name jumphost                 \
+  --resource-group $AZR_RESOURCE_GROUP     \
+  --ssh-key-values $HOME/.ssh/id_rsa.pub   \
+  --admin-username aro                     \
+  --image "RedHat:RHEL:9_1:9.1.2022112113" \
+  --subnet JumpSubnet                      \
+  --public-ip-address jumphost-ip          \
+  --public-ip-sku Standard                 \
+  --vnet-name "$AZR_CLUSTER-aro-vnet-$AZR_RESOURCE_LOCATION" \
+  --location=$AZR_RESOURCE_LOCATION
+----
+
+. Save the jump host public IP address
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+JUMP_IP=$(az vm list-ip-addresses -g $AZR_RESOURCE_GROUP -n jumphost -o tsv \
+--query '[].virtualMachine.network.publicIpAddresses[0].ipAddress')
+echo $JUMP_IP
+echo "export JUMP_IP=$JUMP_IP" >> ~/.bashrc
+----
+
+. Use sshuttle to create a ssh vpn via the jump host (use a separate terminal session)
++
+NOTE: replace the IP with the IP of the jump box from the previous step.
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+shuttle --dns -NHr "aro@$\{JUMP_IP}"  10.0.0.0/8
+----
+
+. Get OpenShift console URL
++
+NOTE: set these variables to match the ones you set at the start.
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+APISERVER=$(az aro show              \
+--name $AZR_CLUSTER                  \
+--resource-group $AZR_RESOURCE_GROUP \
+-o tsv --query apiserverProfile.url)
+echo $APISERVER
+echo "export APISERVER=$APISERVER" >> ~/.bashrc
+----
+
+. Get OpenShift credentials
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+ADMINPW=$(az aro list-credentials    \
+--name $AZR_CLUSTER                  \
+--resource-group $AZR_RESOURCE_GROUP \
+--query kubeadminPassword            \
+-o tsv)
+----
+
+. log into OpenShift
++
+[source,bash,subs="+macros,+attributes",role=execute]
+----
+oc login $APISERVER --username kubeadmin --password $\{ADMINPW}
+----
