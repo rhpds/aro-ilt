@@ -339,7 +339,7 @@ az network vnet subnet update \
 az network vnet subnet update \
   --name "$\{AZR_CLUSTER}-aro-machine-subnet-$\{AZR_RESOURCE_LOCATION}"   \
   --resource-group $\{AZR_RESOURCE_GROUP}                              \
-  --vnet-name "$\{AZR_CLUSTER}-aro-vnet-$\{AZR_RESOURCE_LOCATION}-$\{GUID}"        \
+  --vnet-name "$\{AZR_CLUSTER}-aro-vnet-$\{AZR_RESOURCE_LOCATION}"        \
   --nat-gateway "$\{AZR_CLUSTER}-natgw"
 ----
 
