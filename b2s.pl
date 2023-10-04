@@ -6,7 +6,7 @@ use YAML qw(LoadFile);
 use Data::Dumper qw(Dumper);
 local $YAML::Preserve = 1;
 
-my $source_filename = shift or die "Usage: $0 YAML-FILE\n";
+my $source_filename =  or die "Usage: $0 YAML-FILE\n";
 
 my $data = LoadFile($source_filename);
 
