@@ -1,15 +1,23 @@
+# This is an Antora "playbook"
+
 runtime:
   cache_dir: ./.cache/antora
 
 site:
-  title: Template Tutorial(Dev Mode)
+  title: ARO ILT Site
+    # to enable features like "site map"
+    # parameterize "url:" with the openshift server app URL
+    # e.g. https://showroom-showroom.apps.GUID.DOMAIN.com
   url: http://localhost:3000/rhs-build-course/index.html
+    # start_page: <component>::<file>
   start_page: aro-ilt::home.adoc
 
 content:
   sources:
-    - url: .
-      branches: HEAD
+    # tony had: - url: .
+    - url: https://github.com/rhpds/aro-ilt
+      # tony had: branches: HEAD
+      branches: [ main ]
       start_path: documentation
 asciidoc:
   attributes:
@@ -19,7 +27,7 @@ asciidoc:
     - ./lib/tab-block.js
 ui:
   bundle:
-    url: https://github.com/redhat-developer-demos/rhd-tutorial-ui/releases/download/v0.1.9/ui-bundle.zip
+    url: https://github.com/redhat-developer-demos/rhd-tutorial-ui/releases/download/v0.1.10/ui-bundle.zip
     snapshot: true
   supplemental_files: ./supplemental-ui
 output:
