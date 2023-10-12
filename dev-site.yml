@@ -15,13 +15,15 @@ site:
 content:
   sources:
     # tony had: - url: .
-    - url: https://github.com/rhpds/aro-ilt
+    #- url: https://github.com/rhpds/aro-ilt
+    - url: .
       # tony had: branches: HEAD
       branches: [ main ]
       start_path: documentation
 asciidoc:
   attributes:
     title: ARO ILT(Dev Mode)
+    azure_dns_zone: twilight zone
   extensions:
     - ./lib/remote-include-processor.js
     - ./lib/tab-block.js

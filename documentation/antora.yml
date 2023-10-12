@@ -1,6 +1,10 @@
+---
 name: aro-ilt
 title: ARO ILT
 version: master
+asciidoc:
+  attributes:
+    bastion_ssh_command: xxxxx
 nav:
   - modules/ROOT/nav.adoc
 

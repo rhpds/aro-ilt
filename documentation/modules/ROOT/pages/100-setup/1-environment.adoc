@@ -1,90 +1,73 @@
-:page-layout: home
-include::../include_vars.adoc[]
-:!sectids:
+== Environment Setup
+
+Your environment has already been set up and you are ready to use your first ARO cluster.
 
 == Connect to your bastion VM
 
-. The terminal to the right should already be logged into the Bastion.
-If not, please `ssh` into the bastion.
+. In the terminal window to the right connect to the bastion VM (you can also just click the command below to have it copied and executed automatically):
 +
 [TIP]
 ====
 Answer `yes` when asked if to accept the host key.
 
-The password for the user `azure` is `{bastion_password}`
+The password for the user `azure` is `%bastion_password%`
 ====
 +
-[source,bash,subs="+macros,+attributes",role=execute]
+[source,sh,role=execute]
 ----
-{bastion_ssh_command}
+%bastion_ssh_command%
 ----
-
-=== Create SSH Keys
-
-You'll need ssh keys to offer new VMs that you create.
-
-. Generate new ssh keys.
-His ENTER to accept all the defaults.
 +
-[source,bash,role=execute]
+.Click in the box below to copy and paste the string `yes` to your terminal:
++
+[source,sh,role=execute]
 ----
-ssh-keygen
+yes
+----
++
+.Click in the box below to copy and paste the password to your terminal:
++
+[source,sh,role=execute]
+----
+%bastion_password%
 ----
 
-=== Set Up the Pull Secret
-
-. Use your web browser to log into cloud.redhat.com
-
-. Browse to https://cloud.redhat.com/openshift/install/azure/aro-provisioned
-
-. copy the pull secret button and put it in `/home/azure/pull_secret.txt` with a right click to paste.
-
-.Example
-[source,bash,role=execute]
-----
-vim /home/azure/pull_secret.txt
-----
-. Go into insert mode by hitting `i`
-. Right click in the editor and select "Paste"
-. Hit `<Esc>ZZ` to save the file and quit the editor.
-
-=== Install tools
+=== Validate installed tools
 
 You will be using the `az` and `oc` command line tools throughout this lab.
 
-. Install the `az` command line tool:
-+
-[source,bash,subs="+macros,+attributes",role=execute]
-----
-sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-sudo dnf install -y https://packages.microsoft.com/config/rhel/9.0/packages-microsoft-prod.rpm
-sudo dnf install -y azure-cli
-----
-
 . Verify that the `az` command line tool is installed:
 +
-[source,bash,subs="+macros,+attributes",role=execute]
+[source,sh,role=execute]
 ----
 az version
 ----
 +
 .Sample Output
-[source,json]
+[source,texinfo]
 ----
 {
-  "azure-cli": "2.52.0",
-  "azure-cli-core": "2.52.0",
+  "azure-cli": "2.51.0",
+  "azure-cli-core": "2.51.0",
   "azure-cli-telemetry": "1.1.0",
   "extensions": {}
 }
 ----
 
-. Install EPEL to install Shhuttle:
+. Validate the version of the OpenShift CLI:
 +
-[source,bash,subs="+macros,+attributes",role=execute]
+[source,sh,role=execute]
 ----
-sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
-sudo dnf install -y sshuttle
+oc version
+----
++
+.Sample Output
+[source,texinfo]
+----
+Client Version: 4.11.26
+Kustomize Version: v4.5.4
+Server Version: 4.11.26
+Kubernetes Version: v1.24.6+263df15
 ----
 
-You are ready to start setting up your ARO cluster.
+You are ready to start using your ARO cluster.
