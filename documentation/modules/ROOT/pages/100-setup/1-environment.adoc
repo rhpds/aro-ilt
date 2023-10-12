@@ -10,12 +10,12 @@ Your environment has already been set up and you are ready to use your first ARO
 ====
 Answer `yes` when asked if to accept the host key.
 
-The password for the user `azure` is `%bastion_password%`
+The password for the user `azure` is `{bastion_password}`
 ====
 +
 [source,sh,role=execute]
 ----
-%bastion_ssh_command%
+{bastion_ssh_command}
 ----
 +
 .Click in the box below to copy and paste the string `yes` to your terminal:
@@ -29,7 +29,7 @@ yes
 +
 [source,sh,role=execute]
 ----
-%bastion_password%
+{bastion_password}
 ----
 
 === Validate installed tools

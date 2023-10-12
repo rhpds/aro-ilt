@@ -314,7 +314,7 @@ wget https://raw.githubusercontent.com/sajitsasi/rating-web/master/src/component
 +
 [TIP]
 ----
-When prompted for the username use `developer` and when prompted for the password use `%generated_password%`.
+When prompted for the username use `developer` and when prompted for the password use `{generated_password}`.
 ----
 +
 [source,sh,role=execute]
@@ -488,7 +488,7 @@ https://gitea-gitea.apps.gqfnl2xz.eastus.aroapp.io
 
 . Use this URL in another browser window to open the Gitea repository.
 . Sign into Gitea by clicking the *Sign In* link on the top right of the page.
-. Use `developer` as the username and `%generated_password%` as the password.
+. Use `developer` as the username and `{generated_password}` as the password.
 . In the list of repositories click on the repository *developer/ratings-web*.
 . In the repository click on *Settings* then on *Webhooks*.
 . Click the blue *Add Webhook* button and select *Gitea* for the webhook type.
