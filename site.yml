@@ -19,11 +19,12 @@ content:
     - url: .
       # tony had: branches: HEAD
       branches: [ main ]
-      start_path: documentation
+      start_path: content
 asciidoc:
   attributes:
     title: ARO ILT(Dev Mode)
     azure_dns_zone: twilight zone
+    bastion_password: from site.yaml
   extensions:
     - ./lib/remote-include-processor.js
     - ./lib/tab-block.js

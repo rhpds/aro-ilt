@@ -1,0 +1,16 @@
+---
+name: aro-ilt
+title: ARO ILT
+version: master
+asciidoc:
+  attributes:
+    bastion_password: from antora.yml
+    bastion_ssh_command: from antora.yml
+    preconfigure_aad: |
+      TRUTH
+      in
+      advertising
+nav:
+  - modules/ROOT/nav.adoc
+
+start_page: ROOT:home.adoc
