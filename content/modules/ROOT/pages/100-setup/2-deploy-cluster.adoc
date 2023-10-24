@@ -1,5 +1,4 @@
 :page-layout: home
-include::../include_vars.adoc[]
 :!sectids:
 == Deploy Private ARO Cluster with a Customer Domain and Access via Jumphost
 
