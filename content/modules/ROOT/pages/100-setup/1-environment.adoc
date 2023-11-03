@@ -10,7 +10,7 @@ Your environment has already been set up and you are ready to use your first ARO
 ====
 Answer `yes` when asked if to accept the host key.
 
-The password for the user `azure` is `{bastion_password}`
+The password for the user `azure` is `{bastion_password}` Gitea user number: `{gitea_user}`
 ====
 +
 [source,sh,role=execute]
